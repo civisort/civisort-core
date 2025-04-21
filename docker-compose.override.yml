@@ -1,5 +1,5 @@
 services:
-  # Reverse proxy with HTTPS
+  # ---------- Reverse proxy with HTTPS ----------
   caddy:
     image: caddy:2
     restart: always
@@ -13,12 +13,13 @@ services:
     depends_on:
       - api
 
-  # Placeholder API (will become FastAPI later)
+  # ---------- Placeholder API (will become FastAPI) ----------
   api:
     image: nginx:alpine
+    restart: always
     command: ["sh", "-c", "echo 'CiviSort API coming soon' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
 
-  # pgAdmin web UI
+  # ---------- pgAdmin web UI ----------
   pgadmin:
     image: dpage/pgadmin4
     restart: always
@@ -30,16 +31,26 @@ services:
     depends_on:
       - db
 
-  # Springfield building‑permit scraper
+  # ---------- Springfield city permits (Playwright) ----------
   springfield_permits_pw:
-  county_permits:
     build:
-      context: ./scrapers/county_permits
+      context: ./scrapers/springfield_permits_pw
     depends_on:
       - db
     restart: "no"
+
+  # ---------- Springfield city & COW meeting docs ----------
+  city_meetings:
     build:
-      context: ./scrapers/springfield_permits_pw
+      context: ./scrapers/city_meetings
+    depends_on:
+      - db
+    restart: "no"
+
+  # ---------- Sangamon County PDF permits ----------
+  county_permits:
+    build:
+      context: ./scrapers/county_permits
     depends_on:
       - db
     restart: "no"
