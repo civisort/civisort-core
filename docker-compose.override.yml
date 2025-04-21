@@ -1,0 +1,51 @@
+services:
+  # Reverse proxy with HTTPS
+  caddy:
+    image: caddy:2
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+  # Placeholder API (will become FastAPI later)
+  api:
+    image: nginx:alpine
+    command: ["sh", "-c", "echo 'CiviSort API coming soon' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+
+  # pgAdmin web UI
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@civisort.org
+      PGADMIN_DEFAULT_PASSWORD: civisort
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  # Springfield building‑permit scraper
+  springfield_permits_pw:
+  county_permits:
+    build:
+      context: ./scrapers/county_permits
+    depends_on:
+      - db
+    restart: "no"
+    build:
+      context: ./scrapers/springfield_permits_pw
+    depends_on:
+      - db
+    restart: "no"
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pgadmin_data:
+
