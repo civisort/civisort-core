@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: civisort
+      POSTGRES_PASSWORD: civisort
+      POSTGRES_DB: civisort
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
