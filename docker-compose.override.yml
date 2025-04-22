@@ -17,7 +17,12 @@ services:
   api:
     image: nginx:alpine
     restart: always
-    command: ["sh", "-c", "echo 'CiviSort API coming soon' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+    command:
+      - sh
+      - -c
+      - |
+        echo 'CiviSort API coming soon' > /usr/share/nginx/html/index.html
+        nginx -g 'daemon off;'
 
   # ---------- pgAdmin web UI ----------
   pgadmin:
@@ -31,7 +36,7 @@ services:
     depends_on:
       - db
 
-  # ---------- Springfield city permits (Playwright) ----------
+  # ---------- Springfield ----------
   springfield_permits_pw:
     build:
       context: ./scrapers/springfield_permits_pw
@@ -39,7 +44,6 @@ services:
       - db
     restart: "no"
 
-  # ---------- Springfield city & COW meeting docs ----------
   city_meetings:
     build:
       context: ./scrapers/city_meetings
@@ -47,7 +51,14 @@ services:
       - db
     restart: "no"
 
-  # ---------- Sangamon County PDF permits ----------
+  # ---------- Sangamon County ----------
+  county_board:
+    build:
+      context: ./scrapers/county_board
+    depends_on:
+      - db
+    restart: "no"
+
   county_permits:
     build:
       context: ./scrapers/county_permits
@@ -59,4 +70,3 @@ volumes:
   caddy_data:
   caddy_config:
   pgadmin_data:
-
